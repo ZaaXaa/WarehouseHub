@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WarehouseHub - Full Enterprise Dashboard</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .sidebar-active { background-color: rgba(16, 185, 129, 0.15); border-left: 3px solid #10b981; color: white; }
+        .sidebar-btn { border-left: 3px solid transparent; }
+        .sidebar-btn:hover { background-color: rgba(255,255,255,0.05); }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="w-64 bg-[#0f2922] text-gray-300 flex flex-col h-full shrink-0">
+        <div class="p-5 flex items-center gap-3 border-b border-[#1a3c33]">
+            <div class="w-9 h-9 bg-emerald-600 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+            </div>
+            <span class="text-lg font-bold text-white">WarehouseHub</span>
+        </div>
+        <div class="px-3 py-4 flex-1">
+            <div class="text-[10px] uppercase tracking-wider text-gray-500 font-semibold px-3 mb-3">Management</div>
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm mb-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                <span>Dashboard</span>
+            </button>
+            <button onclick="switchTab('inventory')" id="nav-inventory" class="sidebar-btn w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm mb-1">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    <span>Inventory</span>
+                </div>
+                <span class="bg-emerald-600 text-white text-xs px-2 py-0.5 rounded-full" id="count-inventory">0</span>
+            </button>
+            <button onclick="switchTab('transaction')" id="nav-transaction" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm mb-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 5H4m0 0l4 4m-4-4l4-4"/></svg>
+                <span>Transaction</span>
+            </button>
+            <button onclick="switchTab('supplier')" id="nav-supplier" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm mb-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                <span>Supplier</span>
+            </button>
+            <button onclick="switchTab('reports')" id="nav-reports" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm mb-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span>Reports</span>
+            </button>
+        </div>
+        <div class="p-4 mt-auto">
+            <div class="bg-[#0f2d29] rounded-lg p-4 border border-emerald-900/30">
+                <svg class="w-5 h-5 text-emerald-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div class="text-sm text-white font-medium">Your data is up to date</div>
+                <div class="text-xs text-gray-400 mt-1">Last synced just now</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden">
+        <!-- TOP NAVBAR -->
+        <header class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-2 text-sm text-gray-500">
+                <span>Management</span><span class="text-gray-300">/</span>
+                <span class="text-gray-900 font-medium" id="header-title">Dashboard</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <input type="text" placeholder="Search items, SKUs, or locations..." class="pl-10 pr-16 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 w-80">
+                    <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <span class="absolute right-3 top-2 text-xs text-gray-400 border border-gray-200 rounded px-1.5 py-0.5">⌘ K</span>
+                </div>
+                <button class="relative p-2 text-gray-500 hover:text-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.054-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-orange-400 rounded-full"></span>
+                </button>
+                <div class="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-1.5">
+                    <div class="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 font-bold text-xs">A</div>
+                    <span class="text-sm font-medium text-gray-700">Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- SCROLLABLE MAIN CONTENT -->
+        <main class="flex-1 overflow-y-auto p-8">
+            
+            <!-- PAGE: DASHBOARD -->
+            <div id="page-dashboard" class="page-content space-y-6">
+                <div class="flex justify-between items-start">
+                    <div><h1 class="text-2xl font-bold text-gray-900">Warehouse overview</h1><p class="text-gray-500 text-sm mt-1">A clear view of your stock.</p></div>
+                    <button onclick="openModal('stockModal')" class="px-4 py-2 bg-emerald-700 text-white rounded-lg text-sm font-medium hover:bg-emerald-800 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Add stock
+                    </button>
+                </div>
+                <div class="grid grid-cols-3 gap-5">
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><div class="text-sm font-medium text-gray-500">Total stock units</div><div class="text-3xl font-bold text-gray-900 mt-2" id="stat-total-stock">0</div><div class="mt-3 text-xs"><span class="text-emerald-600 font-semibold">+8.2%</span> <span class="text-gray-500">vs. last month</span></div></div>
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><div class="text-sm font-medium text-gray-500">Active products</div><div class="text-3xl font-bold text-gray-900 mt-2" id="stat-active-prod">0</div><div class="mt-3 text-xs"><span class="text-emerald-600 font-semibold">+12</span> <span class="text-gray-500">new this month</span></div></div>
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><div class="text-sm font-medium text-gray-500">Low-stock items</div><div class="text-3xl font-bold text-orange-600 mt-2" id="stat-low-stock">0</div><div class="mt-3 text-xs"><span class="text-amber-600 font-semibold">Needs attention</span> <span class="text-gray-500">below reorder point</span></div></div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-gray-100"><h2 class="text-lg font-bold text-gray-900">Stock inventory</h2><p class="text-sm text-gray-500 mt-1">Manage every item, in every location.</p></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-50 text-gray-500 text-xs uppercase"><tr><th class="px-6 py-3">Product name</th><th class="px-6 py-3">SKU</th><th class="px-6 py-3">Category</th><th class="px-6 py-3 text-right">Units</th><th class="px-6 py-3">Stock status</th><th class="px-6 py-3">Last updated</th></tr></thead>
+                            <tbody class="divide-y divide-gray-100" id="dashboard-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE: INVENTORY -->
+            <div id="page-inventory" class="page-content hidden space-y-6">
+                <div class="flex justify-between items-start">
+                    <div><h1 class="text-2xl font-bold text-gray-900">Inventory Management</h1><p class="text-gray-500 text-sm mt-1">Manage all items in the warehouse.</p></div>
+                    <button onclick="openModal('stockModal')" class="px-4 py-2 bg-emerald-700 text-white rounded-lg text-sm font-medium hover:bg-emerald-800 flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Add stock</button>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                        <div class="flex gap-1 bg-gray-100 rounded-lg p-1">
+                            <button onclick="filterInventory('all')" id="inv-tab-all" class="px-4 py-1.5 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm">All items <span id="inv-count-all" class="text-gray-400 ml-1">0</span></button>
+                            <button onclick="filterInventory('low')" id="inv-tab-low" class="px-4 py-1.5 text-sm font-medium rounded-md text-gray-600">Low stock <span id="inv-count-low" class="text-amber-600 ml-1">0</span></button>
+                            <button onclick="filterInventory('out')" id="inv-tab-out" class="px-4 py-1.5 text-sm font-medium rounded-md text-gray-600">Out of stock <span id="inv-count-out" class="text-gray-400 ml-1">0</span></button>
+                        </div>
+                        <div class="relative">
+                            <input type="text" id="search-inventory" onkeyup="searchInventory()" placeholder="Search product name or SKU..." class="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm w-72 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-50 text-gray-500 text-xs uppercase"><tr><th class="px-6 py-3 w-10"><input type="checkbox" class="rounded border-gray-300"></th><th class="px-6 py-3 font-medium">Product name</th><th class="px-6 py-3 font-medium">SKU</th><th class="px-6 py-3 font-medium">Category</th><th class="px-6 py-3 font-medium">Supplier</th><th class="px-6 py-3 font-medium">Location</th><th class="px-6 py-3 font-medium text-right">Units</th><th class="px-6 py-3 font-medium">Stock status</th><th class="px-6 py-3 font-medium text-right">Actions</th></tr></thead>
+                            <tbody class="divide-y divide-gray-100" id="inventory-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="p-4 border-t border-gray-100 flex justify-between items-center text-sm text-gray-500">
+                        <span>Showing 1–6 of <span id="showing-total">0</span> products</span>
+                        <div class="flex items-center gap-3"><span class="text-xs">Rows per page</span><select class="border border-gray-200 rounded px-2 py-1 text-xs"><option>6</option><option>10</option><option>25</option></select><div class="flex gap-1"><button class="px-3 py-1 border border-gray-200 rounded text-gray-400">&lt;</button><button class="px-3 py-1 bg-emerald-50 border border-emerald-200 rounded text-emerald-700 font-medium">1</button><button class="px-3 py-1 border border-gray-200 rounded text-gray-600">2</button><button class="px-3 py-1 border border-gray-200 rounded text-gray-600">3</button><span class="px-2 text-gray-400">...</span><button class="px-3 py-1 border border-gray-200 rounded text-gray-600">&gt;</button></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE: TRANSACTION -->
+            <div id="page-transaction" class="page-content hidden space-y-6">
+                <div class="flex justify-between items-start">
+                    <div><h1 class="text-2xl font-bold text-gray-900">Transaction History</h1><p class="text-gray-500 text-sm mt-1">Track inbound and outbound stock.</p></div>
+                    <button onclick="openModal('trxModal')" class="px-4 py-2 bg-emerald-700 text-white rounded-lg text-sm font-medium hover:bg-emerald-800 flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> New Transaction</button>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-50 text-gray-500 text-xs uppercase"><tr><th class="px-6 py-3 font-medium">Type</th><th class="px-6 py-3 font-medium">Product</th><th class="px-6 py-3 font-medium">Category</th><th class="px-6 py-3 font-medium text-right">Qty</th><th class="px-6 py-3 font-medium">Description</th><th class="px-6 py-3 font-medium">Date</th><th class="px-6 py-3 font-medium text-right">Actions</th></tr></thead>
+                            <tbody class="divide-y divide-gray-100" id="transaction-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE: SUPPLIER -->
+            <div id="page-supplier" class="page-content hidden space-y-6">
+                <div class="flex justify-between items-start">
+                    <div><h1 class="text-2xl font-bold text-gray-900">Supplier Management</h1><p class="text-gray-500 text-sm mt-1">Manage all vendors and suppliers.</p></div>
+                    <button onclick="openModal('supplierModal')" class="px-4 py-2 bg-emerald-700 text-white rounded-lg text-sm font-medium hover:bg-emerald-800 flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Add Supplier</button>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-50 text-gray-500 text-xs uppercase"><tr><th class="px-6 py-3 font-medium">Supplier Name</th><th class="px-6 py-3 font-medium">Contact</th><th class="px-6 py-3 font-medium">Location</th><th class="px-6 py-3 font-medium text-right">Actions</th></tr></thead>
+                        <tbody class="divide-y divide-gray-100" id="supplier-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PAGE: REPORTS (SUDAH DIKEMBALIKAN TABEL DETAIL TRANSAKSI) -->
+            <div id="page-reports" class="page-content hidden space-y-6">
+                <div class="flex justify-between items-start">
+                    <div><h1 class="text-2xl font-bold text-gray-900">Reports</h1><p class="text-gray-500 text-sm mt-1">Summary of stock movements.</p></div>
+                    <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 bg-white flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> Export report</button>
+                </div>
+                <div class="grid grid-cols-2 gap-5">
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><div class="text-sm font-medium text-gray-500">Total Inbound (Masuk)</div><div class="text-3xl font-bold text-emerald-600 mt-2" id="rep-inbound">0</div></div>
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><div class="text-sm font-medium text-gray-500">Total Outbound (Keluar)</div><div class="text-3xl font-bold text-sky-600 mt-2" id="rep-outbound">0</div></div>
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><div class="text-sm font-medium text-gray-500">Total stock units</div><div class="text-3xl font-bold text-gray-900 mt-2" id="rep-total-stock">0</div></div>
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><div class="text-sm font-medium text-gray-500">Active products</div><div class="text-3xl font-bold text-gray-900 mt-2" id="rep-active-prod">0</div></div>
+                </div>
+                <!-- TABEL DETAIL TRANSAKSI DI REPORTS -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-gray-100"><h3 class="font-bold text-gray-900">Detail Transaksi</h3></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-50 text-gray-500 text-xs uppercase"><tr><th class="px-6 py-3 font-medium">Type</th><th class="px-6 py-3 font-medium">Product</th><th class="px-6 py-3 font-medium text-right">Qty</th><th class="px-6 py-3 font-medium">Description</th><th class="px-6 py-3 font-medium">Date</th></tr></thead>
+                            <tbody class="divide-y divide-gray-100" id="report-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODALS -->
+    <!-- MODAL: ADD/EDIT STOCK -->
+    <div id="stockModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 w-[500px] shadow-2xl">
+            <h3 class="text-lg font-bold mb-4 text-gray-900" id="modal-title">Add New Stock</h3>
+            <form id="formStock" class="space-y-4">
+                <input type="hidden" id="s_id">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Product Name</label><input type="text" id="s_nama" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500"></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">SKU</label><input type="text" id="s_sku" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                        <select id="s_kategori" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                            <option value="Packaging">Packaging</option>
+                            <option value="Safety & PPE">Safety & PPE</option>
+                            <option value="Labels">Labels</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Furniture">Furniture</option>
+                            <option value="Stationery">Stationery</option>
+                            <option value="Food & Beverage">Food & Beverage</option>
+                        </select>
+                    </div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Supplier</label><select id="s_supplier" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></select></div>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Location</label><input type="text" id="s_lokasi" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Units</label><input type="number" id="s_stok" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Price (IDR)</label><input type="number" id="s_harga" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeModal('stockModal')" class="flex-1 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="flex-1 py-2 bg-emerald-700 text-white rounded-lg text-sm font-medium hover:bg-emerald-800">Save Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: NEW TRANSACTION -->
+    <div id="trxModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 w-[400px] shadow-2xl">
+            <h3 class="text-lg font-bold mb-4 text-gray-900">New Transaction</h3>
+            <form id="formTrx" class="space-y-4">
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Transaction Type</label><select id="t_jenis" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"><option value="Masuk">Masuk (Inbound)</option><option value="Keluar">Keluar (Outbound)</option></select></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Select Product</label><select id="t_barang" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></select></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label><input type="number" id="t_qty" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Description</label><input type="text" id="t_desc" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeModal('trxModal')" class="flex-1 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="flex-1 py-2 bg-emerald-700 text-white rounded-lg text-sm font-medium hover:bg-emerald-800">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD SUPPLIER -->
+    <div id="supplierModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 w-[400px] shadow-2xl">
+            <h3 class="text-lg font-bold mb-4 text-gray-900">Add New Supplier</h3>
+            <form id="formSupplier" class="space-y-4">
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Supplier Name</label><input type="text" id="sup_nama" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Contact</label><input type="text" id="sup_kontak" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Location</label><input type="text" id="sup_alamat" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeModal('supplierModal')" class="flex-1 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="flex-1 py-2 bg-emerald-700 text-white rounded-lg text-sm font-medium hover:bg-emerald-800">Save Supplier</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let allItems = [];
+        let currentInventoryFilter = 'all';
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('page-' + tabId).classList.remove('hidden');
+            document.querySelectorAll('[id^="nav-"]').forEach(btn => btn.classList.remove('sidebar-active'));
+            document.getElementById('nav-' + tabId).classList.add('sidebar-active');
+            const titles = {dashboard: 'Dashboard', inventory: 'Inventory', transaction: 'Transaction', supplier: 'Supplier', reports: 'Reports'};
+            document.getElementById('header-title').innerText = titles[tabId];
+            if(tabId === 'dashboard') renderDashboard();
+            if(tabId === 'inventory') renderInventoryTable();
+            if(tabId === 'transaction') renderTransactions();
+            if(tabId === 'supplier') renderSupplierTable();
+            if(tabId === 'reports') renderReports();
+        }
+
+        async function refreshData() {
+            const dashRes = await fetch('/api/dashboard');
+            const dash = await dashRes.json();
+            const itemRes = await fetch('/api/barang');
+            allItems = await itemRes.json();
+            const supRes = await fetch('/api/supplier');
+            const suppliers = await supRes.json();
+
+            document.getElementById('stat-total-stock').innerText = dash.total_stok.toLocaleString();
+            document.getElementById('stat-active-prod').innerText = dash.total_produk;
+            document.getElementById('stat-low-stock').innerText = dash.low_stock;
+            document.getElementById('count-inventory').innerText = dash.total_produk;
+            document.getElementById('showing-total').innerText = dash.total_produk;
+
+            document.getElementById('inv-count-all').innerText = allItems.length;
+            document.getElementById('inv-count-low').innerText = allItems.filter(i => i.warna === 'orange').length;
+            document.getElementById('inv-count-out').innerText = allItems.filter(i => i.warna === 'red').length;
+
+            document.getElementById('rep-inbound').innerText = dash.total_masuk.toLocaleString();
+            document.getElementById('rep-outbound').innerText = dash.total_keluar.toLocaleString();
+            document.getElementById('rep-total-stock').innerText = dash.total_stok.toLocaleString();
+            document.getElementById('rep-active-prod').innerText = dash.total_produk;
+
+            const supSelect = document.getElementById('s_supplier');
+            supSelect.innerHTML = '';
+            suppliers.forEach(s => { supSelect.innerHTML += `<option value="${s.id}">${s.nama}</option>`; });
+
+            const prodSelect = document.getElementById('t_barang');
+            prodSelect.innerHTML = '';
+            allItems.forEach(i => { prodSelect.innerHTML += `<option value="${i.id}">${i.nama} (${i.sku})</option>`; });
+
+            renderDashboard();
+            renderInventoryTable();
+            renderTransactions();
+            renderSupplierTable();
+            renderReports(); // Memanggil render Reports agar tabel detail transaksi muncul
+        }
+
+        function getStatusBadge(warna, status) {
+            if (warna === 'red') return '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-100"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>Out of stock</span>';
+            if (warna === 'orange') return '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Low stock</span>';
+            return '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>In stock</span>';
+        }
+
+        function renderDashboard() {
+            const tbody = document.getElementById('dashboard-table-body');
+            tbody.innerHTML = '';
+            allItems.forEach(item => {
+                const stokColor = item.warna === 'red' ? 'text-red-600' : 'text-gray-900';
+                tbody.innerHTML += `<tr class="hover:bg-gray-50 transition"><td class="px-6 py-4"><div class="font-medium text-gray-900">${item.nama}</div><div class="text-xs text-gray-400 mt-0.5">${item.dimensi || ''}</div></td><td class="px-6 py-4 text-gray-600 font-mono text-xs">${item.sku}</td><td class="px-6 py-4 text-gray-600">${item.kategori}</td><td class="px-6 py-4 text-right"><span class="font-bold ${stokColor}">${item.stok.toLocaleString()}</span> <span class="text-gray-400 text-xs">units</span></td><td class="px-6 py-4">${getStatusBadge(item.warna, item.status)}</td><td class="px-6 py-4 text-gray-500 text-xs">${item.updated}</td></tr>`;
+            });
+        }
+
+        function renderInventoryTable() {
+            const tbody = document.getElementById('inventory-table-body');
+            tbody.innerHTML = '';
+            let filtered = allItems;
+            if (currentInventoryFilter === 'low') filtered = allItems.filter(i => i.warna === 'orange');
+            if (currentInventoryFilter === 'out') filtered = allItems.filter(i => i.warna === 'red');
+            filtered.forEach(item => {
+                const stokColor = item.warna === 'red' ? 'text-red-600' : 'text-gray-900';
+                tbody.innerHTML += `<tr class="hover:bg-gray-50 transition"><td class="px-6 py-4"><input type="checkbox" class="rounded border-gray-300"></td><td class="px-6 py-4"><div class="font-medium text-gray-900">${item.nama}</div><div class="text-xs text-gray-400 mt-0.5">${item.dimensi || ''}</div></td><td class="px-6 py-4 text-gray-600 font-mono text-xs">${item.sku}</td><td class="px-6 py-4 text-gray-600">${item.kategori}</td><td class="px-6 py-4 text-gray-600 text-xs">${item.nama_supplier}</td><td class="px-6 py-4"><span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded font-mono">${item.lokasi}</span></td><td class="px-6 py-4 text-right"><span class="font-bold ${stokColor}">${item.stok.toLocaleString()}</span></td><td class="px-6 py-4">${getStatusBadge(item.warna, item.status)}</td><td class="px-6 py-4 text-right"><button onclick='editItem(${JSON.stringify(item)})' class="text-emerald-600 hover:text-emerald-800 text-xs font-medium mr-3">Edit</button><button onclick="deleteItem(${item.id})" class="text-red-600 hover:text-red-800 text-xs font-medium">Delete</button></td></tr>`;
+            });
+        }
+
+        function filterInventory(type) {
+            currentInventoryFilter = type;
+            document.querySelectorAll('[id^="inv-tab-"]').forEach(b => b.className = 'px-4 py-1.5 text-sm font-medium rounded-md text-gray-600');
+            document.getElementById('inv-tab-' + type).className = 'px-4 py-1.5 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm';
+            renderInventoryTable();
+        }
+
+        function searchInventory() {
+            const q = document.getElementById('search-inventory').value.toLowerCase();
+            document.querySelectorAll('#inventory-table-body tr').forEach(row => { row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none'; });
+        }
+
+        function renderTransactions() {
+            fetch('/api/transaksi').then(r => r.json()).then(trxs => {
+                const tbody = document.getElementById('transaction-table-body');
+                tbody.innerHTML = '';
+                trxs.reverse().forEach(t => {
+                    const badge = t.jenis === 'Masuk' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-sky-100 text-sky-700 border-sky-200';
+                    tbody.innerHTML += `<tr class="hover:bg-gray-50"><td class="px-6 py-4"><span class="px-2.5 py-1 rounded-md text-xs font-bold border ${badge}">${t.jenis}</span></td><td class="px-6 py-4"><div class="font-medium text-gray-900">${t.nama_barang}</div><div class="text-xs text-gray-400">${t.dimensi || ''}</div></td><td class="px-6 py-4 text-gray-600">${t.kategori}</td><td class="px-6 py-4 text-right font-bold">${t.jumlah}</td><td class="px-6 py-4 text-gray-600 text-xs">${t.deskripsi || ''}</td><td class="px-6 py-4 text-gray-500 text-xs">${t.tanggal}</td><td class="px-6 py-4 text-right"><button onclick="deleteTransaction(${t.id})" class="text-red-600 hover:text-red-800 text-xs font-medium">Delete</button></td></tr>`;
+                });
+            });
+        }
+
+        function renderSupplierTable() {
+            fetch('/api/supplier').then(r => r.json()).then(suppliers => {
+                const tbody = document.getElementById('supplier-table-body');
+                tbody.innerHTML = '';
+                suppliers.forEach(s => {
+                    tbody.innerHTML += `<tr class="hover:bg-gray-50"><td class="px-6 py-4 font-medium text-gray-900">${s.nama}</td><td class="px-6 py-4 text-gray-600">${s.kontak}</td><td class="px-6 py-4 text-gray-600">${s.alamat}</td><td class="px-6 py-4 text-right"><button onclick="deleteSupplier(${s.id})" class="text-red-600 hover:text-red-800 text-xs font-medium">Delete</button></td></tr>`;
+                });
+            });
+        }
+
+        // FUNGSI RENDER REPORTS (DIKEMBALIKAN)
+        function renderReports() {
+            fetch('/api/transaksi').then(r => r.json()).then(trxs => {
+                const tbody = document.getElementById('report-table-body');
+                tbody.innerHTML = '';
+                trxs.reverse().forEach(t => {
+                    const color = t.jenis === 'Masuk' ? 'text-emerald-600 bg-emerald-50' : 'text-sky-600 bg-sky-50';
+                    tbody.innerHTML += `<tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-md text-xs font-bold ${color}">${t.jenis}</span></td>
+                        <td class="px-6 py-4 font-medium text-gray-900">${t.nama_barang}</td>
+                        <td class="px-6 py-4 text-right font-bold">${t.jumlah}</td>
+                        <td class="px-6 py-4 text-gray-600 text-xs">${t.deskripsi || ''}</td>
+                        <td class="px-6 py-4 text-gray-500 text-xs">${t.tanggal}</td>
+                    </tr>`;
+                });
+            });
+        }
+
+        function openModal(id) {
+            if(id === 'stockModal') {
+                document.getElementById('modal-title').innerText = 'Add New Stock';
+                document.getElementById('formStock').reset();
+                document.getElementById('s_id').value = '';
+            }
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function editItem(item) {
+            document.getElementById('modal-title').innerText = 'Edit Stock';
+            document.getElementById('s_id').value = item.id;
+            document.getElementById('s_nama').value = item.nama;
+            document.getElementById('s_sku').value = item.sku;
+            document.getElementById('s_kategori').value = item.kategori;
+            document.getElementById('s_supplier').value = item.supplier_id || 1;
+            document.getElementById('s_lokasi').value = item.lokasi;
+            document.getElementById('s_stok').value = item.stok;
+            document.getElementById('s_harga').value = item.harga;
+            document.getElementById('stockModal').classList.remove('hidden');
+        }
+
+        document.getElementById('formStock').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('s_id').value;
+            const payload = { nama: document.getElementById('s_nama').value, sku: document.getElementById('s_sku').value, kategori: document.getElementById('s_kategori').value, supplier_id: parseInt(document.getElementById('s_supplier').value), lokasi: document.getElementById('s_lokasi').value, stok: parseInt(document.getElementById('s_stok').value), harga: parseInt(document.getElementById('s_harga').value), dimensi: '' };
+            if (id) await fetch(`/api/barang/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+            else await fetch('/api/barang', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+            closeModal('stockModal'); await refreshData();
+        });
+
+        document.getElementById('formTrx').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = { jenis: document.getElementById('t_jenis').value, barang_id: parseInt(document.getElementById('t_barang').value), jumlah: parseInt(document.getElementById('t_qty').value), deskripsi: document.getElementById('t_desc').value };
+            await fetch('/api/transaksi', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+            closeModal('trxModal'); await refreshData();
+        });
+
+        document.getElementById('formSupplier').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = { nama: document.getElementById('sup_nama').value, kontak: document.getElementById('sup_kontak').value, alamat: document.getElementById('sup_alamat').value };
+            await fetch('/api/supplier', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+            closeModal('supplierModal'); await refreshData();
+        });
+
+        async function deleteItem(id) { if(confirm('Hapus barang ini?')) { await fetch(`/api/barang/${id}`, { method: 'DELETE' }); await refreshData(); } }
+        async function deleteTransaction(id) { if(confirm('Hapus transaksi ini? Stok akan dikembalikan.')) { await fetch(`/api/transaksi/${id}`, { method: 'DELETE' }); await refreshData(); } }
+        async function deleteSupplier(id) { if(confirm('Hapus supplier ini?')) { await fetch(`/api/supplier/${id}`, { method: 'DELETE' }); await refreshData(); } }
+
+        window.onload = async () => { await refreshData(); switchTab('dashboard'); };
+    </script>
+</body>
+</html>
